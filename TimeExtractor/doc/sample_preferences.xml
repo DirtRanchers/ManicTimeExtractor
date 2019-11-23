@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<Preferences xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<!-- Path to local ManicTime database -->
+  <DatabaseFilepath>%LOCALAPPDATA%\Finkit\ManicTime\ManicTime.sdf</DatabaseFilepath>
+
+  <!-- ManicTime billable flag will be used to determine whether
+       time entries are included in Loggable totals  (true/false) -->
+  <BillableDeterminesLoggable>false</BillableDeterminesLoggable>
+  
+  <!-- An input category like TFS###### will be treated as simply TFS 
+       for all purposes, including mapping and blacklisting (true/false) -->
+  <StripWorkItemFromCategory>false</StripWorkItemFromCategory>
+
+
+	<!-- CategoryMappings
+     each Mapping defines a single match criterion, and a new category 
+     to assign if the criterion is met.  
+	     a.  matchType must be one of the following:  
+	     	       equals   startsWith   endsWith   contains
+	         and the matchType must be exactly as shown
+	     b.  comparisons are case-insensitive.  e.g.,  if matchType="startsWith" 
+	         and fragment="ADMIN", the following input values would match:
+	         "Administrative"   "administrative"  "aDmIN22"
+	     c.  the criterion are tested in the order, and when a match on a given
+	         input value is successful, no remaining mappings are attempted
+	         for that input value.  (i.e.,  no "chaining" occurs)
+     examples (using the mappings defined below)
+	     1.  "AD", "style", "frEEstyle" remap to "Cat1"
+	     2.  "Ad2" remaps to "Cat2"
+	     3.  "RAIN", "grain", "rainMAN" remap to "Cat3"
+	     4.  "toil",  "Toiling"  remap to "Cat4"
+	     5.  nothing remaps to "Cat5", because any matches would have already matched a prior criterion)
+	     6.  "baseball" remains unchanged, because it doesn't match any criteria
+	-->
+  <CategoryMappings>
+    <Mapping newCategory="Cat1">
+      <Criterion matchType="equals" fragment="ad" />
+    </Mapping>
+    <Mapping newCategory="Cat2">
+      <Criterion matchType="startsWith" fragment="ad" />
+    </Mapping>
+    <Mapping newCategory="Cat3">
+      <Criterion matchType="contains" fragment="rain" />
+    </Mapping>
+    <Mapping newCategory="Cat1">
+      <Criterion matchType="endsWith" fragment="style" />
+    </Mapping>
+    <Mapping newCategory="Cat4">
+      <Criterion matchType="startsWith" fragment="toil" />
+    </Mapping>
+    <Mapping newCategory="Cat5">
+      <Criterion matchType="startsWith" fragment="to" />
+    </Mapping>
+  </CategoryMappings>
+
+	<!--  LoggableBlackList
+	   Defines a set of criterion which "blacklist" a particular category
+	   from being included in the daily Loggable and Loggable grand totals.
+	     a. If BillableDeterminesLoggable = true, AND the
+	        category is blacklisted, the blacklist takes precedence.
+	     b. matchType must be one of the following:  
+	     	       equals   startsWith   endsWith   contains
+	        and the matchType must be exactly as shown
+	     c. comparisons are case-insensitive
+	     d. the blacklist is applied AFTER the Category Mappings are
+	        applied
+	   examples (using the criterion defined below)
+	     1. "personal"  "PERSONAL"  "Defer" and "defeRRED" are all blacklisted
+	-->
+  <LoggableBlacklist>
+    <Criterion matchType="equals" fragment="personal" />
+    <Criterion matchType="startsWith" fragment="defer" />
+  </LoggableBlacklist>
+
+  <!-- RoundingIncrement
+       Specifies how times are rounded, fractional hours.  Possible 
+       values are:
+         0.01 (approx. 30 seconds, but UI calls it "no rounding")
+         0.05 (nearest 3 minute increment), 
+         0.10 (nearest 6 minute increment)
+  -->
+  <RoundingIncrement>0.05</RoundingIncrement>
+
+</Preferences>
