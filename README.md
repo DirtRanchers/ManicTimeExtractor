@@ -1,20 +1,18 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# Purpose
+Extracts time from a Manic Time (time-tracking) database and displays it in a grid.
+I use it to display time stats in a way that makes it easy to transfer time entries to my company's timesheet.
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+Manic Time can be downloaded from https://www.manictime.com
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+This tool currently works with ManicTime 3.7.4 and earlier.  It likely also works with 3.8.* but I haven't tested it.
+These versions use a SQL Compact database.   Find these older versions of ManicTime @ https://www.manictime.com/Releases/#.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+In addition, this is tested only against the Windows single-user version; it has never been tested against the Server version nor has it been compiled to run against the Mac/Linux/Android versions.   
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+This tool does NOT currently work with Manic Time version 4.0 or later, because ManicTime switched DB providers and table structure, and I haven't taken time to learn the table structure.  The following link details the structure for Manic Time **Server** (it may be the same for the single-user/desktop version as well, but that requires more research to determine): http://support.manictime.com/knowledgebase/articles/900645-sample-sql-queries-to-query-and-export-data-from-t
+
+
+# How it Works
+This software totals the Manic Time logged data, per day, per tag.
+
+Note:  Time "slices" in Manic Time CAN be tagged with a single tag, or with multiple tags (separated by commas.)  Multiple tags can be used on however you wish in Manic Time, but Manic Time uses only the first tag assigned to a time slice to determine which overall "category" the slice belongs to.   This tool follows the same philosophy.  Only the first tag in each list is evaluated, and the final display is grouped by--and displays--only the first tag.
