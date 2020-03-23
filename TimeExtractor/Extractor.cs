@@ -204,7 +204,7 @@ namespace ManicTimeExtractor
 
 			List<RawTimeEntry> activityEntries;
 
-			using (var dbConnection = new SqlCeConnection($@"Data Source={databaseFilepath}"))
+			using (var dbConnection = new SqlCeConnection($@"Data Source={databaseFilepath};SSCE:Max Database Size=2048;"))
 			using (var dbCommand = new SqlCeCommand(query, dbConnection))
 			using (var adapter = new SqlCeDataAdapter(dbCommand))
 			using (var dataset = new DataSet())
