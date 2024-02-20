@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.Data.SqlServerCe;
 using System.Linq;
 
@@ -21,14 +22,13 @@ namespace ManicTimeExtractor
 
 			//aggregate to one object per time slice (each with an internal hierarchical tags collection)
 			var timeEntries = rawTimeEntries
-				.GroupBy(x => x.ActivityId)
-				.Select(x => new TimeEntry(x.OrderBy(y => y.TagOrder)
-											.Select(y => y.Tag))
+				//.GroupBy(x => x.ActivityId)
+				.Select(x => new TimeEntry(x.Tag)
 				{
-					ActivityId = x.Key,
-					StartTime = x.First().StartTime,
-					EndTime = x.First().EndTime,
-					NotesXml = x.First().NotesXml
+					ActivityId = x.ActivityId,
+					StartTime = x.StartTime,
+					EndTime = x.EndTime,
+					NotesXml = x.NotesXml
 				})
 				.ToList();
 
@@ -39,7 +39,7 @@ namespace ManicTimeExtractor
 				{
 					Date = x.StartTime.Date,
 					Category = RemapCategory(x.Category),
-					IsLoggable = IsLoggable(RemapCategory(x.Category), x.IsBillable)
+					IsLoggable = IsLoggable(RemapCategory(x.Category))
 				})
 				.ToList();
 
@@ -104,11 +104,6 @@ namespace ManicTimeExtractor
 			var rounding = (int)(1 / preferences.RoundingIncrement);
 			return (decimal)(Math.Round((new TimeSpan(ticks).TotalHours * rounding), 0) / rounding);
 		}
-
-
-		private static bool IsLoggable(string category, bool isBillable) =>
-			(!preferences.BillableDeterminesLoggable || isBillable)
-			&& IsLoggable(category);
 
 		//actual mappings that have already taken place on this run
 		//include "mappings" where output = input.  We save these,
@@ -180,45 +175,36 @@ namespace ManicTimeExtractor
 		{
 			string query = $@"
 				select 
-					a.activityid, 
-					a.startlocaltime as [StartTime], 
-					a.endlocaltime as [EndTime], 
-					g.DisplayName as [Tag], 
-					gli.displayorder as [TagOrder],
-					a.TextData as [NotesXml]
+					ActivityId, 
+					StartLocalTime as [StartTime], 
+					EndLocalTime as [EndTime], 
+					Name as [Tag]
 				from 
-					Activity a
-				join timeline t 
-					on t.timelineId = a.TimelineId
-				join grouplistitem gli 
-					on gli.grouplistid = a.grouplistid
-				join [group] g 
-					on g.groupid = gli.groupid
+					Ar_Activity
 				where 
-					t.typename = 'ManicTime/Tags'
-					and startlocaltime >= @startDate
-					and startlocaltime < dateadd(day, 1, @endDate)
+					ReportId = 1
+					and StartLocalTime >= @startDate
+					and StartLocalTime < date(@endDate, '+1 day')
 				order by 
-					a.startlocaltime, gli.displayorder
-				";
+					StartLocalTime;";
 
 			List<RawTimeEntry> activityEntries;
 
-			using (var dbConnection = new SqlCeConnection($@"Data Source={databaseFilepath};SSCE:Max Database Size=2048;"))
-			using (var dbCommand = new SqlCeCommand(query, dbConnection))
-			using (var adapter = new SqlCeDataAdapter(dbCommand))
+			using (var dbConnection = new SQLiteConnection($@"Data Source={databaseFilepath}; Version=3; Read Only=True; FailIfMissing=True;"))
+			using (var dbCommand = new SQLiteCommand(query, dbConnection))
+			using (var adapter = new SQLiteDataAdapter(dbCommand))
 			using (var dataset = new DataSet())
 			{
 				dbCommand.Parameters.Add(
-					new SqlCeParameter("@startDate", startDate.Date)
+					new SQLiteParameter("@startDate", startDate.Date)
 					{
-						SqlDbType = SqlDbType.DateTime
+						DbType = DbType.DateTime
 					});
 				dbCommand.Parameters.Add(
-					new SqlCeParameter("@endDate", endDate.Date)
+					new SQLiteParameter("@endDate", endDate.Date)
 					{
-						SqlDbType = SqlDbType.DateTime
-					});
+                        DbType = DbType.DateTime
+                    });
 				adapter.Fill(dataset);
 				activityEntries = dataset.Tables[0]
 					.AsEnumerable()
@@ -228,8 +214,8 @@ namespace ManicTimeExtractor
 						StartTime = (DateTime)x["StartTime"],
 						EndTime = (DateTime)x["EndTime"],
 						Tag = (string)x["Tag"],
-						TagOrder = (int)x["TagOrder"],
-						NotesXml = (string)x["NotesXml"]
+						TagOrder = 1,
+						NotesXml = ""
 					})
 					.ToList();
 			}

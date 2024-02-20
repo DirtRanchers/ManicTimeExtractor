@@ -15,7 +15,7 @@ namespace ManicTimeExtractor.Model
 	internal class TimeEntry
 	{
 
-		public TimeEntry(IEnumerable<string> tags)
+		public TimeEntry(string tags)
 		{
 			PopulateTags(tags);
 		}
@@ -33,33 +33,10 @@ namespace ManicTimeExtractor.Model
 		public string Category =>
 			Tags.FirstOrDefault() ?? "{blank}";
 
-		public bool IsBillable { get; private set; }
-
-
-		private void PopulateTags(IEnumerable<string> tags)
+		private void PopulateTags(string tags)
 		{
-			Tags = tags.ToList();
-			for (int i = 0; i < Tags.Count(); ++i)
-			{
-				var tag = Tags[i];
-				int number;
-				if (tag.StartsWith("tfs", StringComparison.OrdinalIgnoreCase)
-					&& int.TryParse(tag.Substring(3), out number))
-				{
-					TfsWorkItem = number;
-					if (i == 0 && Preferences.Instance.StripWorkItemFromCategory)
-						Tags[0] = "tfs";
-					break;
-				}
-			}
-
-			if (Tags.LastOrDefault() == ":billable")
-			{
-				IsBillable = true;
-				Tags.RemoveAt(Tags.Count() - 1);
-			}
-
+			Tags = tags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
 		}
-		public int? TfsWorkItem { get; set; }
+
 	}
 }

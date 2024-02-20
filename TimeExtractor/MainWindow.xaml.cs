@@ -183,10 +183,10 @@ namespace ManicTimeExtractor
 			dialog.EnsureFileExists = true;
 			dialog.DefaultFileName = System.IO.Path.GetFileName(preferences.DatabaseFilepath);
 			dialog.InitialDirectory = System.IO.Path.GetDirectoryName(preferences.DatabaseFilepath);
-			dialog.Filters.Add(new CommonFileDialogFilter("SQL Compact 4.0 DB file", ".sdf"));
+			dialog.Filters.Add(new CommonFileDialogFilter("ManicTime reporting DB (ManicTimeReports.db)", "*.db"));
+            dialog.Filters.Add(new CommonFileDialogFilter("All files", "*.*"));
 
-
-			var result = dialog.ShowDialog();
+            var result = dialog.ShowDialog();
 			if (result == CommonFileDialogResult.Ok)
 			{
 				textBoxDbFile.Text = dialog.FileName;
