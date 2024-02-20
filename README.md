@@ -4,13 +4,10 @@ I use it to display time stats in a way that makes it easy to transfer time entr
 
 Manic Time can be downloaded from https://www.manictime.com
 
-This tool currently works with ManicTime 3.7.4 and earlier.  It likely also works with 3.8.* but I haven't tested it.
-These versions use a SQL Compact database.   Find these older versions of ManicTime @ https://www.manictime.com/Releases/#.
+This tool currently works with ManicTime 2023.3.3.0.  It likely works with many older and newer versions, but I haven't tested it.
+Find older releases of ManicTime @ https://www.manictime.com/Releases/#.
 
 In addition, this is tested only against the Windows single-user version; it has never been tested against the Server version nor has it been compiled to run against the Mac/Linux/Android versions.   
-
-This tool does NOT currently work with Manic Time version 4.0 or later, because ManicTime switched DB providers and table structure, and I haven't taken time to learn the table structure.  The following link details the structure for Manic Time **Server** (it may be the same for the single-user/desktop version as well, but that requires more research to determine): http://support.manictime.com/knowledgebase/articles/900645-sample-sql-queries-to-query-and-export-data-from-t
-
 
 # How it Works
 This software totals the Manic Time logged data, per day, per tag.
